@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>用户列表</title>
+
+<link rel="stylesheet" href="//unpkg.com/layui@2.6.8/dist/css/layui.css">
+<!-- 引入 layui.js -->
+<script src="//unpkg.com/layui@2.6.8/dist/layui.js"></script>
+<script type="text/javascript" src="scripts/jquery.min.js"></script>
+<link rel="stylesheet"
+	href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"
+	integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu"
+	crossorigin="anonymous">
+<script
+	src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"
+	integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd"
+	crossorigin="anonymous"></script>
+</head>
+<body>
+	<ul class="layui-nav" lay-filter="">
+		<li class="layui-nav-item"><a href="toHome">首页</a></li>
+		<li class="layui-nav-item"><a href="logout">注销</a></li>
+	</ul>
+
+
+	
+		工号：<input type="text" name="eId" id="eId1"> 
+			<button onclick="doAttendece()">出勤  </button>
+
+	<form action="selectAttendance" method="get">
+		工号：<input type="text" name="eId"> <input type="submit"
+			value="查询">
+	</form>
+
+	<table class="layui-table">
+		<colgroup>
+			<col width="10">
+			<col width="60">
+			<col width="60">
+			<col width="60">
+			<col width="60">
+
+		</colgroup>
+		<thead>
+			<tr>
+
+				<th>序号</th>
+				<th>员工id</th>
+
+				<th>月份</th>
+				<th>出勤</th>
+
+				<th>操作</th>
+			</tr>
+		</thead>
+		<tbody>
+
+			<tr th:each="a:${byId}">
+
+				<td th:text="${aStat.index+1}"></td>
+				<td th:text="${a.eId}"></td>
+				<td th:text="${a.aMonth}"></td>
+				<td th:text="${a.amount}"></td>
+				<td style="text-align: center"><a class="operationOne"
+					th:onclick='showUpdateDataModal([[${a}]])'> 修改 </a> </a> <a
+					class="operationTwo" th:onclick='deleteUserInfo([[${a}]])'> 删除</a></td>
+			</tr>
+
+
+		</tbody>
+	</table>
+	当月
+	<table class="layui-table">
+		<colgroup>
+			<col width="10">
+			<col width="60">
+			<col width="60">
+			<col width="60">
+			<col width="60">
+		</colgroup>
+		<thead>
+			<tr>
+
+				<th>序号</th>
+				<th>员工id</th>
+
+				<th>月份</th>
+				<th>出勤</th>
+				<th>操作</th>
+			</tr>
+		</thead>
+		<tbody>
+
+			<tr th:each="a:${list}">
+
+
+				<td th:text="${aStat.index+1}"></td>
+				<td th:text="${a.eId}"></td>
+				<td th:text="${a.aMonth}"></td>
+				<td th:text="${a.amount}"></td>
+				<td style="text-align: center"><a class="operationOne"
+					th:onclick='showUpdateDataModal([[${a}]])'> 修改 </a> </a> <a
+					class="operationTwo" th:onclick='deleteUserInfo([[${a}]])'> 删除</a></td>
+			</tr>
+
+
+		</tbody>
+	</table>
+	<table class="layui-table">
+		<colgroup>
+			<col width="10">
+			<col width="60">
+			<col width="60">
+			<col width="60">
+			<col width="60">
+		</colgroup>
+		<thead>
+			<tr>
+
+				<th>序号</th>
+				<th>员工id</th>
+
+				<th>月份</th>
+				<th>出勤</th>
+				<th>操作</th>
+			</tr>
+		</thead>
+		<tbody>
+
+			<tr>全部
+			</tr>
+			<tr th:each="a:${listAll}">
+
+				<td th:text="${aStat.index+1}"></td>
+				<td th:text="${a.eId}"></td>
+				<td th:text="${a.aMonth}"></td>
+				<td th:text="${a.amount}"></td>
+				<td style="text-align: center"><a class="operationOne"
+					th:onclick='showUpdateDataModal([[${a}]])'> 修改 </a> </a> <a
+					class="operationTwo" th:onclick='deleteUserInfo([[${a}]])'> 删除</a></td>
+			</tr>
+
+
+		</tbody>
+	</table>
+
+
+
+
+	<div class="modal fade" id="myModal" tabindex="-1" role="dialog"
+		aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"
+						aria-hidden="true">&times;</button>
+					<h4 class="modal-title" id="myModalLabel">修改</h4>
+				</div>
+				<div class="modal-body">
+					<!-- 模态框内容 -->
+					<form id="myform">
+
+
+						<input type="hidden" class="form-control" id="eId" name="eId" />
+
+						<input type="hidden" class="form-control" id="aMonth"
+							placeholder="aMonth" name="aMonth" /> <input type="text"
+							class="form-control" id="amount" name="amount"
+							placeholder="amount" />
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+					<button type="button" class="btn btn-primary" onclick="doUpdate()">提交更改</button>
+				</div>
+			</div>
+			<!-- /.modal-content -->
+		</div>
+		<!-- /.modal -->
+	</div>
+
+</body>
+
+<script th:inline="javascript">
+	function deleteUserInfo(a) {
+		console.log(a);
+		var eId = a.eId;
+		var aMonth = a.aMonth;
+		console.log(eId);
+		$.ajax({
+			url : 'atten/del',
+			type : "POST",
+			data : {
+				eId : eId,
+				aMonth : aMonth
+			},
+			dataType : "json",
+			success : function(result) {
+				console.log(result)
+				if (result.statusCode === "200") {
+					alert("success");
+					window.location.reload() //刷新页面
+				} else {
+					console.log("error delete fail")
+					return false;
+				}
+			},
+			error : function() {
+				alert("系统错误");
+			}
+		});
+	}
+
+	function doUpdate() {
+		var amount = $.trim($('#amount').val());
+		var aMonth = $.trim($('#aMonth').val());
+
+		var eId = $.trim($('#eId').val());
+
+		console.log(aMonth)
+
+		console.log(eId)
+		var url = 'atten/update';
+		if (eId == '') {
+			url = 'atten/add';
+		}
+		$.ajax({
+			url : url,
+			type : "POST",
+			data : {
+				amount : amount,
+				eId : eId,
+				aMonth : aMonth
+			},
+			//	async : false,
+			dataType : "json",
+			success : function(result) {
+				$('#myform')[0].reset();
+				// 给出信息
+				alert(result);
+				// 手动隐藏模态框
+				$("#myModal").modal('hide');
+				// 重新查询, 刷新页面
+				window.location.reload() //刷新页面
+			}
+		})
+	}
+
+	function showUpdateDataModal(data) {
+		//给模态框赋值回显
+		console.log(data)
+		$("#amount").val(data.amount)
+		$("#eId").val(data.eId)
+		$("#aMonth").val(data.aMonth)
+
+		//打开模态框
+		$("#myModal").modal({
+			show : true,
+			keyboard : true,
+			backdrop : true
+		})
+	}
+
+	function doAttendece() {
+		var eId = $.trim($('#eId1').val());
+		console.log(eId)
+		var url = 'doAttendance';
+
+		$.ajax({
+			url : url,
+			type : "get",
+			data : {
+
+				eId : eId,
+
+			},
+			//	async : false,
+			dataType : "json",
+			success : function(result) {
+				console.log(result)
+				if (result.statusCode === "200") {
+					alert("success");
+					window.location.reload() //刷新页面
+				} else {
+					console.log("error delete fail")
+					return false;
+				}
+			}
+		})
+	}
+</script>
+</html>

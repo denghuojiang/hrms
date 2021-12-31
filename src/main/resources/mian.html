@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>主页面</title>
+<script type="text/javascript" src="scripts/jquery.min.js"></script>
+<script type="text/javascript" src="scripts/cookie.js"></script>
+
+<link rel="stylesheet" href="//unpkg.com/layui@2.6.8/dist/css/layui.css">
+<!-- 引入 layui.js -->
+<script src="//unpkg.com/layui@2.6.8/dist/layui.js"></script>
+<script type="text/javascript" src="scripts/jquery.min.js"></script>
+<link rel="stylesheet"
+	href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"
+	integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu"
+	crossorigin="anonymous">
+</head>
+<body>
+<ul class="layui-nav" lay-filter="">
+		<li class="layui-nav-item"><a href="toHome">首页</a></li>
+		<li class="layui-nav-item"><a href="logout">注销</a></li>
+	</ul>
+ <h2 th:text="hello+'  '+${user.eName}">张飞</h2>	
+  &nbsp; &nbsp;<a href="goUserInfo"> 管理员工信息 </a> 
+  <br/>
+  &nbsp; &nbsp; <a th:href="goDeptInfo"> 管理部门信息 </a>
+     <br/>
+  &nbsp; &nbsp; <a href="goAttendceInfo"> 管理出勤信息 </a>
+     <br/>
+  &nbsp;  &nbsp;<a href="goSalaryInfo"> 管理薪资信息 </a>
+     <br/>
+  &nbsp; &nbsp; <a href="goLeaveInfo"> 管理请假信息 </a>
+</body>
+</html>

@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>用户列表</title>
+
+<link rel="stylesheet" href="//unpkg.com/layui@2.6.8/dist/css/layui.css">
+<!-- 引入 layui.js -->
+<script src="//unpkg.com/layui@2.6.8/dist/layui.js"></script>
+<script type="text/javascript" src="scripts/jquery.min.js"></script>
+<link rel="stylesheet"
+	href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"
+	integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu"
+	crossorigin="anonymous">
+</head>
+<body>
+	<ul class="layui-nav" lay-filter="">
+		<li class="layui-nav-item"><a href="toHome">首页</a></li>
+		<li class="layui-nav-item"><a href="logout">注销</a></li>
+	</ul>
+	<table class="layui-table">
+		<colgroup>
+			<col width="10">
+			<col width="60">
+			<col width="60">
+			<col width="60">
+			<col width="60">
+			<col width="60">
+			<col>
+		</colgroup>
+		<thead>
+			<tr>
+				
+				<th>id</th>
+				<th>名称</th>
+
+				<th>状态</th>
+				<th>父部门id</th>
+				<th>地址</th>
+				<th>操作</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr th:each="dept:${list}">
+			
+				<td th:text="${dept.deptId}"></td>
+				<td th:text="${dept.deptName}"></td>
+				<td th:text="${dept.status}"></td>
+				<td th:text="${dept.pDept}"></td>
+				
+				<td th:text="${dept.deptLocal}"></td>
+				
+				<td style="text-align: center"><a class="operationOne"
+					th:onclick='showUpdateDataModal([[${dept}]])'> 修改 </a> </a> <a
+					class="operationTwo" th:onclick='deleteUserInfo([[${dept.deptId}]])'>
+						删除</a></td>
+			</tr>
+		</tbody>
+	</table>
+	<button class="btn btn-primary btn-lg"
+		onclick="showUpdateDataModal('{}')">添加</button>
+	<div class="modal fade" id="myModal" tabindex="-1" role="dialog"
+		aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"
+						aria-hidden="true">&times;</button>
+					<h4 class="modal-title" id="myModalLabel">修改</h4>
+				</div>
+				<div class="modal-body">
+					<!-- 模态框内容 -->
+					<form id="myform">
+
+
+						<input type="hidden" class="form-control" id="deptId" name="deptId" />
+						<input type="text" class="form-control" id="deptName"
+							placeholder="deptName" name="deptName" />
+							
+							
+							
+							 <input type="text" class="form-control" id="status" name="status"
+							placeholder="status" /> 
+							<input type="text" class="form-control"
+							id="pDept" name="pDept" placeholder="pDept">
+							
+							 <input
+							type="text" class="form-control" id="deptLocal" name="deptLocal"
+							placeholder="deptLocal">
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+					<button type="button" class="btn btn-primary" onclick="doUpdate()">提交更改</button>
+				</div>
+			</div>
+			<!-- /.modal-content -->
+		</div>
+		<!-- /.modal -->
+	</div>
+
+	<!-- 加载 Bootstrap 的所有 JavaScript 插件。你也可以根据需要只加载单个插件。 -->
+	<script
+		src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"
+		integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd"
+		crossorigin="anonymous"></script>
+</body>
+
+<script th:inline="javascript">
+	function deleteUserInfo(id) {
+		$.ajax({
+			url : 'dept/del',
+			type : "POST",
+			data : {
+				id : id
+			},
+			dataType : "json",
+			success : function(result) {
+				console.log(result)
+				if (result.statusCode === "200") {
+					alert("success");
+					window.location.reload() //刷新页面
+				} else {
+					console.log("error delete fail")
+					return false;
+				}
+			},
+		});
+	}
+
+	
+	function doUpdate() {
+		var deptId = $.trim($('#deptId').val());
+		var deptName = $.trim($('#deptName').val());
+		var status = $.trim($('#status').val());
+		var pDept = $.trim($('#pDept').val());
+		var deptLocal = $.trim($('#deptLocal').val());
+		
+		
+		
+		console.log(deptId)
+		var url = 'dept/update';
+		if (deptId == '') {
+			url = 'dept/add';
+		}
+		$.ajax({
+			url : url,
+			type : "POST",
+			data : {
+				deptId : deptId,
+				deptName : deptName,
+				status : status,
+				pDept : pDept,
+				deptLocal : deptLocal,
+			},
+		//	async : false,
+			dataType : "json",
+			success : function(result) {
+				$('#myform')[0].reset();
+				// 给出信息
+				alert(result);
+				// 手动隐藏模态框
+				$("#myModal").modal('hide');
+				// 重新查询, 刷新页面
+				window.location.reload() //刷新页面
+			}
+		})
+	}
+
+	function showUpdateDataModal(data) {
+		//给模态框赋值回显
+		console.log(data)
+		$("#deptId").val(data.deptId)
+		$("#deptName").val(data.deptName)
+		$("#status").val(data.status)
+		$("#deptLocal").val(data.deptLocal)
+		$("#pDept").val(data.pDept)
+		
+	
+		//打开模态框
+		$("#myModal").modal({
+			show : true,
+			keyboard : true,
+			backdrop : true
+		})
+	}
+</script>
+</html>

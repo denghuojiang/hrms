@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>用户列表</title>
+
+<link rel="stylesheet" href="//unpkg.com/layui@2.6.8/dist/css/layui.css">
+<!-- 引入 layui.js -->
+<script src="//unpkg.com/layui@2.6.8/dist/layui.js"></script>
+<script type="text/javascript" src="scripts/jquery.min.js"></script>
+<link rel="stylesheet"
+	href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"
+	integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu"
+	crossorigin="anonymous">
+</head>
+<body>
+	<ul class="layui-nav" lay-filter="">
+		<li class="layui-nav-item"><a href="toHome">首页</a></li>
+		<li class="layui-nav-item"><a href="logout">注销</a></li>
+	</ul>
+	<table class="layui-table">
+		<colgroup>
+			<col width="10">
+			<col width="10">
+			<col width="60">
+			<col width="60">
+			<col width="60">
+			<col width="60">
+			<col width="60">
+			<col width="60">
+			<col>
+		</colgroup>
+		<thead>
+			<tr>
+				<th>id</th>
+				<th>工号</th>
+				<th>开始</th>
+				<th>结束</th>
+				<th>原因</th>
+				<th>是否同意</th>
+				<th>回复</th>
+				<th>操作</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr th:each="leave:${list}">
+				<td th:text="${leave.lId}"></td>
+				<td th:text="${leave.eId}"></td>
+				<td th:text="${leave.start}"></td>
+				<td th:text="${leave.end}"></td>
+				<td th:text="${leave.desc}"></td>
+				<td th:text="${leave.state}"></td>
+				<td th:text="${leave.reply}"></td>
+				<td style="text-align: center"><a class="operationOne"
+					th:onclick='showUpdateDataModal([[${leave}]])'> 回复 </a> </a> <a
+					class="operationTwo" th:onclick='deleteUserInfo([[${leave.lId}]])'>
+						删除</a></td>
+			</tr>
+		</tbody>
+	</table>
+	<div class="modal fade" id="myModal" tabindex="-1" role="dialog"
+		aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"
+						aria-hidden="true">&times;</button>
+					<h4 class="modal-title" id="myModalLabel">回复</h4>
+				</div>
+				<div class="modal-body">
+					<!-- 模态框内容 -->
+					<form id="myform">
+
+						<input type="hidden" class="form-control" id="eId" name="eId" />
+						<input type="hidden" class="form-control" id="lId" name="lId" />
+						<input type="text" class="form-control" id="reply"
+							placeholder="reply" name="reply" /> <select id="state"
+							name="state" class="form-control">
+							<option value="1">是</option>
+							<option value="0">否</option>
+						</select>
+
+
+
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+					<button type="button" class="btn btn-primary" onclick="doUpdate()">回复</button>
+				</div>
+			</div>
+			<!-- /.modal-content -->
+		</div>
+		<!-- /.modal -->
+	</div>
+
+	<!-- 加载 Bootstrap 的所有 JavaScript 插件。你也可以根据需要只加载单个插件。 -->
+	<script
+		src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"
+		integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd"
+		crossorigin="anonymous"></script>
+</body>
+
+<script th:inline="javascript">
+	function deleteUserInfo(lId) {
+		$.ajax({
+			url : 'leave/del',
+			type : "POST",
+			data : {
+				lId : lId
+			},
+			dataType : "json",
+			success : function(result) {
+				console.log(result)
+				if (result.statusCode === "200") {
+					alert("success");
+					window.location.reload() //刷新页面
+				} else {
+					console.log("error delete fail")
+					return false;
+				}
+			},
+		});
+	}
+
+	function doUpdate() {
+		var lId = $.trim($('#lId').val());
+		var reply = $.trim($('#reply').val());
+		var state = $.trim($('#state').val());
+		var eId = $.trim($('#eId').val());
+
+		console.log(lId)
+		var url = 'leave/reply';
+		$.ajax({
+			url : url,
+			type : "POST",
+			data : {
+				lId : lId,
+				eId : eId,
+				reply : reply,
+				state : state
+			},
+			// async : true,
+			dataType : "json",
+			success : function(result) {
+				
+				// 给出信息
+				alert(result);
+				// 手动隐藏模态框
+				
+				// 重新查询, 刷新页面
+				window.location.reload() //刷新页面
+			},
+			error: function(){
+				alert("系统错误");
+				// 手动隐藏模态框
+				// 重新查询, 刷新页面
+				window.location.reload() //刷新页面
+			}
+			
+		})
+		$('#myform')[0].reset();
+		$("#myModal").modal('hide');
+	}
+
+	function showUpdateDataModal(data) {
+		//给模态框赋值回显
+		console.log(data)
+		$("#lId").val(data.lId)
+		$("#reply").val(data.reply)
+		$("#state").val(data.state)
+		$("#eId").val(data.eId)
+		//打开模态框
+		$("#myModal").modal({
+			show : true,
+			keyboard : true,
+			backdrop : true
+		})
+	}
+</script>
+</html>

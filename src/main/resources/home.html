@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>home</title>
+
+<link rel="stylesheet" href="//unpkg.com/layui@2.6.8/dist/css/layui.css">
+<!-- 引入 layui.js -->
+<script src="//unpkg.com/layui@2.6.8/dist/layui.js"></script>
+<script type="text/javascript" src="scripts/jquery.min.js"></script>
+<link rel="stylesheet"
+	href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"
+	integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu"
+	crossorigin="anonymous">
+</head>
+<body>
+	<ul class="layui-nav" lay-filter="">
+		<li class="layui-nav-item"><a href="toHome">首页</a></li>
+		<li class="layui-nav-item"><a href="logout">注销</a></li>
+	</ul>
+	<h2 th:text="hello+'  '+${user.eName}">张飞</h2>	
+	
+		<h2 th:text="'  '+${state}">当前状态</h2>	
+	 <a  th:href="@{goAddLeave(eId=${user.eId})}"><h2>我要请假</h2></a>
+   <br/>
+	 &nbsp;<p>更改密码</p>
+	<table>
+		<tr>
+
+
+			<td><span>新密码</span></td>
+			<td><input id="newPasswd" name="newPasswd" type="text"></td>
+			<td><input type="hidden"  id="eId" th:value='${user.eId}'
+				name="eId" /></td>
+			<td><input type="button" onclick="dochange()" value="更改"></td>
+
+		</tr>
+	</table>
+	 <br/>
+  <table class="layui-table">
+		<colgroup>
+			<col width="10">
+			<col width="60">
+			<col width="60">
+			<col width="60">
+
+		</colgroup>
+		<thead>
+			<tr>
+
+				<th>序号</th>
+
+				<th>月份</th>
+				<th>出勤</th>
+
+			</tr>
+		</thead>
+		<tbody>
+
+			<tr th:each="a:${byId}">
+
+				<td th:text="${aStat.index+1}"></td>
+				<td th:text="${a.aMonth}"></td>
+				<td th:text="${a.amount}"></td>
+				
+			</tr>
+
+
+		</tbody>
+	</table>
+	  <table class="layui-table">
+		<colgroup>
+			<col width="10">
+			<col width="60">
+			<col width="60">
+			<col width="60">
+
+		</colgroup>
+		<thead>
+			<tr>
+
+				<th>序号</th>
+				<th>月份</th>
+				<th>发放时间</th>	
+				<th>金额</th>
+
+			</tr>
+		</thead>
+		<tbody>
+
+			<tr th:each="a:${sList}">
+
+				<td th:text="${aStat.index+1}"></td>
+				<td th:text="${a.sMonth}"></td>
+				<td th:text="${a.sTime}"></td>
+				<td th:text="${a.sAmount}"></td>
+				
+			</tr>
+
+
+		</tbody>
+	</table>
+</body>
+<script>
+	function dochange() {
+		var eId = $.trim($('#eId').val());
+		var newPasswd = $.trim($('#newPasswd').val());
+		console.log(eId);
+		console.log(newPasswd)
+		$.ajax({
+			url : "user/change",
+			type : "POST",
+			data : {
+				eId : eId,
+				newPasswd : newPasswd
+
+			},
+			success : function(result) {
+				ajaxobj=eval("("+result+")");
+				console.log(result)
+				console.log(result.statusCode)
+				
+				
+				if (ajaxobj.statusCode === "200") {
+					alert("success");
+					 window.location.href="/hrms/index.jsp";
+				} else {
+					console.log("error change fail")
+					return false;
+				}
+			},
+		});
+
+	}
+</script>
+</html>

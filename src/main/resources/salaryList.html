@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>用户列表</title>
+
+<link rel="stylesheet" href="//unpkg.com/layui@2.6.8/dist/css/layui.css">
+<!-- 引入 layui.js -->
+<script src="//unpkg.com/layui@2.6.8/dist/layui.js"></script>
+<script type="text/javascript" src="scripts/jquery.min.js"></script>
+<link rel="stylesheet"
+	href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"
+	integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu"
+	crossorigin="anonymous">
+</head>
+<body>
+	<ul class="layui-nav" lay-filter="">
+		<li class="layui-nav-item"><a href="toHome">首页</a></li>
+		<li class="layui-nav-item"><a href="logout">注销</a></li>
+	</ul>
+
+	<form action="salary/add">
+		工号：<input type="text" name="eId"> 金额：<input type="text"
+			name="amount"> <input type="submit" value="提交">
+	</form>
+
+	<table class="layui-table">
+		<colgroup>
+			<col width="10">
+			<col width="10">
+			<col width="70">
+			<col width="60">
+			<col width="40">
+			<col width="60">
+			<col>
+		</colgroup>
+		<thead>
+			<tr>
+
+				<th>No.</th>
+				<th>工号</th>
+				<th>月份</th>
+				<th>登记时间</th>
+				<th>金额</th>
+				<th>操作</th>
+
+			</tr>
+		</thead>
+		<tbody>
+			<tr th:each="salary:${list}">
+				<td th:text="${salaryStat.index+1}"></td>
+				<td th:text="${salary.eId}"></td>
+				<td th:text="${salary.sMonth}"></td>
+				<td th:text="${salary.sTime}"></td>
+				<td th:text="${salary.sAmount}"></td>
+				<td style="text-align: center"><a class="operationTwo"
+					th:onclick='deleteUserInfo([[${salary}]])'> 删除</a></td>
+
+			</tr>
+		</tbody>
+	</table>
+
+	<!-- 加载 Bootstrap 的所有 JavaScript 插件。你也可以根据需要只加载单个插件。 -->
+	<script
+		src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"
+		integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd"
+		crossorigin="anonymous"></script>
+</body>
+<script type="text/javascript">
+	function deleteUserInfo(s) {
+		$.ajax({
+			url : 'salary/del',
+			type : "POST",
+			data : {
+				eId:s.eId,sMonth:s.sMonth
+			},
+			dataType : "json",
+			success : function(result) {
+				console.log(result)
+				if (result.statusCode === "200") {
+					alert("success");
+					window.location.reload() //刷新页面
+				} else {
+					console.log("error delete fail")
+					return false;
+				}
+			},
+		});
+	}
+</script>
+</html>
